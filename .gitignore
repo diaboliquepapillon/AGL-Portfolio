@@ -15,6 +15,12 @@ venv/
 .venv/
 env/
 
+# Node (Puppeteer for PDF export)
+node_modules/
+
+# Generated PDFs (run: node generate-pdf.mjs)
+pdf-export/
+
 # Editor
 .cursor/
 *.swp

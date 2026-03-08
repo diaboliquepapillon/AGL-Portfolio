@@ -56,17 +56,17 @@ const C = {
 };
 
 /* ── Chart.js global defaults ────────────────────────────────────────────── */
-Chart.defaults.color          = '#9ca3af';
-Chart.defaults.borderColor    = '#e4e7f0';
-Chart.defaults.font.family    = "'Inter', -apple-system, sans-serif";
-Chart.defaults.font.size      = 11;
-Chart.defaults.plugins.tooltip.backgroundColor = '#1a1d27';
-Chart.defaults.plugins.tooltip.borderColor     = '#2d3348';
+Chart.defaults.color          = '#9a8e84';
+Chart.defaults.borderColor    = '#ddd5ca';
+Chart.defaults.font.family    = "'DM Mono', 'Courier New', monospace";
+Chart.defaults.font.size      = 10;
+Chart.defaults.plugins.tooltip.backgroundColor = '#1c1814';
+Chart.defaults.plugins.tooltip.borderColor     = '#2e2a26';
 Chart.defaults.plugins.tooltip.borderWidth     = 1;
 Chart.defaults.plugins.tooltip.padding         = 10;
-Chart.defaults.plugins.tooltip.cornerRadius    = 8;
-Chart.defaults.plugins.tooltip.titleColor      = '#f9fafb';
-Chart.defaults.plugins.tooltip.bodyColor       = '#d1d5db';
+Chart.defaults.plugins.tooltip.cornerRadius    = 2;
+Chart.defaults.plugins.tooltip.titleColor      = '#f6f3ee';
+Chart.defaults.plugins.tooltip.bodyColor       = '#9a8e84';
 Chart.defaults.plugins.legend.labels.boxWidth  = 10;
 Chart.defaults.plugins.legend.labels.padding   = 12;
 Chart.defaults.plugins.legend.labels.usePointStyle = true;
@@ -216,18 +216,18 @@ function buildNarratives(data) {
   const windLateAvg  = last12.reduce((s, d) => s + d.wind, 0) / 12;
 
   document.getElementById('kf-01').innerHTML =
-    `Renewables now supply <strong>${renewLast.toFixed(0)}%</strong> of NEM generation: up from <strong>${renewFirst.toFixed(0)}%</strong> when the market opened in 1998. The transition accelerated sharply after 2015 as utility-scale solar reached cost parity and rooftop installations surged.`;
+    `When the NEM opened in 1998, renewables supplied <strong>${renewFirst.toFixed(0)}%</strong> of generation. Today that number is <strong>${renewLast.toFixed(0)}%</strong>. What the chart below makes clear is that this wasn't gradual — it was flat for 15 years, then almost vertical after 2015 when solar costs collapsed.`;
 
   document.getElementById('sb-01').innerHTML = bullets([
-    `Coal's share of generation fell from <strong>${coalFirst.toFixed(0)}%</strong> in the late 1990s to <strong>${coalLast.toFixed(0)}%</strong> today. It still runs most of the NEM's baseload: but its role is shrinking every year as plant retirements accelerate.`,
-    cross20 ? `Renewables crossed <strong>20% of generation</strong> for the first time in <strong>${cross20.dateStr.substring(0,7)}</strong>${cross30 ? `, and 30% in <strong>${cross30.dateStr.substring(0,7)}</strong>` : ''}: milestones that mark the structural shift rather than incremental change.` : '',
-    windEarlyAvg > 0 ? `Wind output grew from roughly <strong>${fmt(windEarlyAvg, 0)} GWh/month</strong> when it first appeared on the grid to <strong>${fmt(windLateAvg, 0)} GWh/month</strong> today: a <strong>${(windLateAvg / windEarlyAvg).toFixed(0)}× increase</strong>.` : '',
-    `Solar (utility + rooftop combined) generated <strong>${fmt(solarLast12 / 12, 0)} GWh/month</strong> on average over the past year. A decade ago, this technology was statistically insignificant in the NEM mix.`,
-    batLast12 > 0 ? `Battery storage discharged <strong>${fmt(batLast12, 0)} GWh</strong> into the NEM over the past 12 months: a technology that barely registered in the data before 2018.` : '',
+    `Coal fell from <strong>${coalFirst.toFixed(0)}%</strong> of generation in the late 1990s to <strong>${coalLast.toFixed(0)}%</strong> today. It's still the biggest single source on the grid, which is exactly why its retirement timeline matters so much to prices, reliability, and emissions all at once.`,
+    cross20 ? `The 20% renewables milestone arrived in <strong>${cross20.dateStr.substring(0,7)}</strong>${cross30 ? `, the 30% milestone in <strong>${cross30.dateStr.substring(0,7)}</strong>` : ''}. These weren't incremental steps — each one marked a threshold where renewable output started fundamentally changing price dynamics.` : '',
+    windEarlyAvg > 0 ? `Wind grew from <strong>${fmt(windEarlyAvg, 0)} GWh/month</strong> in its early years to <strong>${fmt(windLateAvg, 0)} GWh/month</strong> today — a <strong>${(windLateAvg / windEarlyAvg).toFixed(0)}× increase</strong>. Use the filter above to zoom into 2010–2020 and watch it climb.` : '',
+    `Solar barely existed in the NEM data before 2012. It now generates an average of <strong>${fmt(solarLast12 / 12, 0)} GWh/month</strong>. That's roughly ${Math.round(solarLast12 / 12 / 750)} large coal units' worth of energy, appearing largely between 9am and 4pm every day.`,
+    batLast12 > 0 ? `Battery storage discharged <strong>${fmt(batLast12, 0)} GWh</strong> into the grid over the past 12 months. That's a rounding error on total generation — but batteries don't compete on volume. They compete on timing, and the data shows they're increasingly winning that competition.` : '',
   ].filter(Boolean));
 
   document.getElementById('st-01').innerHTML =
-    `<strong>So what?</strong> The direction of travel is clear. What isn't settled is the pace: coal still provides ${coalLast.toFixed(0)}% of generation, and any accelerated retirement scenario requires equivalent dispatchable replacement capacity. Understanding how the fuel mix shifts hour-by-hour: and what that means for price and reliability: is the central analytical challenge in today's NEM.`;
+    `<strong>What this means for AGL.</strong> The fuel mix chart is really a map of future investment risk. Coal still provides ${coalLast.toFixed(0)}% of generation, which means any retirement accelerates pressure on the remaining dispatchable fleet. Wind and solar fill capacity but not necessarily dispatch — that gap is where batteries, gas peakers, and demand response compete. Knowing where the grid is on this curve, and where it's heading, is the starting point for almost every commercial decision in the NEM today.`;
 
   /* ══ SECTION 02: PRICE STORY ════════════════════════════════════════════ */
   const prices   = data.map(d => d.price).filter(p => p > 0);
@@ -245,17 +245,17 @@ function buildNarratives(data) {
   const avgCrisis  = crisis2022.length ? crisis2022.reduce((s, d) => s + d.price, 0) / crisis2022.length : null;
 
   document.getElementById('kf-02').innerHTML =
-    `The NEM's average electricity price rose from <strong>$${fmt(avg5yrFirst, 0)}/MWh</strong> in the early 2000s to <strong>$${fmt(avg5yrLast, 0)}/MWh</strong> over the past five years. But the average obscures the real shift: the frequency and severity of price spikes has increased significantly as the fuel mix becomes more variable.`;
+    `Average prices roughly doubled from <strong>$${fmt(avg5yrFirst, 0)}/MWh</strong> in the early 2000s to <strong>$${fmt(avg5yrLast, 0)}/MWh</strong> over the past five years. But looking at the chart below, the number that stands out isn't the average — it's the spike in 2022. That one period changed how the entire market thinks about price risk.`;
 
   document.getElementById('sb-02').innerHTML = bullets([
-    `The highest monthly price on record is <strong>$${fmt(maxPrice, 0)}/MWh</strong> in <strong>${maxMonth?.dateStr?.substring(0,7)}</strong>: <strong>${(maxPrice / avg5yrFirst).toFixed(1)}×</strong> the average price of the early NEM. These extremes reflect just how fast supply can tighten when demand peaks and generation is constrained.`,
-    avgCrisis ? `The 2022 energy crisis averaged <strong>$${fmt(avgCrisis, 0)}/MWh</strong> across the year: the most sustained period of high prices in NEM history, driven by coal plant outages, gas supply constraints, and La Niña disrupting hydro conditions simultaneously.` : '',
-    `Over the past five years, <strong>${spikesLast60}</strong> months exceeded the 95th percentile price threshold ($${p95.toFixed(0)}/MWh): compared to just <strong>${spikesFirst60}</strong> in the NEM's first five years. The market is not just more expensive; it's more volatile.`,
-    `Rolling 12-month average prices peaked in 2022 and have been declining since, as new renewable capacity compressed wholesale prices during daylight hours: a direct quantification of the "merit order effect."`,
+    `The highest monthly price on record is <strong>$${fmt(maxPrice, 0)}/MWh</strong>, recorded in <strong>${maxMonth?.dateStr?.substring(0,7)}</strong>. That's <strong>${(maxPrice / avg5yrFirst).toFixed(1)}×</strong> the early NEM average, and it happened in a single month. These extremes matter because they dominate annual revenue calculations for generators, and annual cost calculations for retailers.`,
+    avgCrisis ? `The 2022 energy crisis averaged <strong>$${fmt(avgCrisis, 0)}/MWh</strong> across the full year — the most expensive 12 months in NEM history. Three things collided: ageing coal plants tripping offline unexpectedly, gas supply tightening due to LNG export contracts, and La Niña reducing hydro catchment. None of those factors individually would have caused the crisis. Together they did.` : '',
+    `In the NEM's first five years, <strong>${spikesFirst60}</strong> months exceeded the 95th percentile price level ($${p95.toFixed(0)}/MWh). In the most recent five years, <strong>${spikesLast60}</strong> did. The market isn't just more expensive — it's harder to predict, which increases hedging costs for everyone.`,
+    `Since 2022's peak, rolling average prices have been falling as new solar and wind capacity compresses midday prices. This is the "merit order effect" showing up in real data — renewables, once built, bid at near-zero cost and push higher-cost generators out of the dispatch stack.`,
   ].filter(Boolean));
 
   document.getElementById('st-02').innerHTML =
-    `<strong>So what?</strong> Higher average prices and greater volatility create both commercial risk and analytical opportunity. Being able to explain *why* a month's prices spiked: which fuel wasn't available, which demand event occurred, what the renewable mix looked like: is the core competency of an energy market analyst. Every chart in this section is the output of that kind of question.`;
+    `<strong>What this means for AGL.</strong> Price volatility is both a risk and an opportunity depending on your position. A retailer with fixed-price customers is exposed when prices spike; a generator with flexible dispatch benefits. Understanding which months spiked, which fuels were missing, and what the renewable mix looked like at the time is the starting point for any hedging, trading, or contracting decision in this market.`;
 
   /* ══ SECTION 03: EMISSIONS ══════════════════════════════════════════════ */
   const intFirst = first12.reduce((s, d) => s + d.intensity, 0) / 12;
@@ -282,17 +282,17 @@ function buildNarratives(data) {
   const cleanest = data.reduce((b, d) => d.intensity < b.intensity ? d : b);
 
   document.getElementById('kf-03').innerHTML =
-    `The NEM's carbon intensity has fallen <strong>${intDrop.toFixed(0)}%</strong> since 1998: from <strong>${fmt(intFirst, 0)} kg</strong> to <strong>${fmt(intLast, 0)} kgCO₂e/MWh</strong>. Real progress. But coal's disproportionate emissions footprint means the final phase of decarbonisation: actual coal retirement: will drive the majority of remaining abatement.`;
+    `Grid emissions intensity has fallen <strong>${intDrop.toFixed(0)}%</strong> since 1998 — from <strong>${fmt(intFirst, 0)} kg</strong> to <strong>${fmt(intLast, 0)} kgCO₂e/MWh</strong>. That sounds like strong progress, and it is. But look at what's still left: coal generates ${coalLast.toFixed(0)}% of the energy and causes ${coalEmShare.toFixed(0)}% of the emissions. Getting from here to net zero means dealing with that gap directly.`;
 
   document.getElementById('sb-03').innerHTML = bullets([
-    `Coal generates <strong>${coalLast.toFixed(0)}%</strong> of NEM electricity but causes <strong>${coalEmShare.toFixed(0)}%</strong> of NEM emissions: its carbon intensity is <strong>${emMultiple.toFixed(1)}×</strong> its generation share. Displacing the last coal plant has far more emissions impact than adding an equivalent volume of gas.`,
-    peakEmYear ? `Annual NEM emissions peaked in <strong>${peakEmYear[0]}</strong> at approximately <strong>${(peakEmYear[1] / 1e6).toFixed(0)} Mt CO₂e</strong> and have since fallen by <strong>${emReduction.toFixed(0)}%</strong>: almost entirely due to reduced coal generation and rising renewables.` : '',
-    `The lowest monthly intensity on record was <strong>${fmt(cleanest.intensity, 0)} kgCO₂e/MWh</strong> in <strong>${cleanest.dateStr?.substring(0,7)}</strong>: reflecting peak renewable output conditions, likely during spring when solar and wind coincide with mild demand.`,
-    `At the current average pace of intensity reduction, reaching <strong>200 kgCO₂e/MWh</strong>: roughly the level consistent with a 50% renewables share: would require approximately <strong>${Math.round((intLast - 200) / ((intFirst - intLast) / 27))} more years</strong> without policy acceleration.`,
+    `Coal's emissions share is <strong>${emMultiple.toFixed(1)}× its generation share</strong> — it generates ${coalLast.toFixed(0)}% of electricity but causes ${coalEmShare.toFixed(0)}% of the emissions. This is why retiring a coal plant cuts emissions so much faster than adding an equivalent volume of gas generation.`,
+    peakEmYear ? `Annual NEM emissions peaked at <strong>${(peakEmYear[1] / 1e6).toFixed(0)} Mt CO₂e in ${peakEmYear[0]}</strong> and have since fallen <strong>${emReduction.toFixed(0)}%</strong>. Almost all of that reduction came from reduced coal output — renewables didn't just add capacity, they actively displaced generation that was causing emissions.` : '',
+    `The cleanest month on record was <strong>${cleanest.dateStr?.substring(0,7)}</strong>, when intensity hit <strong>${fmt(cleanest.intensity, 0)} kgCO₂e/MWh</strong>. That was probably a high-wind, high-solar spring week — the kind of day the grid is already capable of in the right conditions.`,
+    `At the current pace, reaching <strong>200 kgCO₂e/MWh</strong> would take roughly <strong>${Math.round((intLast - 200) / ((intFirst - intLast) / 27))} more years</strong>. That's why every coal retirement announcement moves the needle more than any other single policy intervention.`,
   ].filter(Boolean));
 
   document.getElementById('st-03').innerHTML =
-    `<strong>So what?</strong> Emissions intensity is the metric that links energy data to climate commitments. An analyst who can connect fuel mix changes to scope 2 emissions outcomes, explain why intensity doesn't fall linearly with renewables growth, and model future trajectories under different coal retirement scenarios is exactly what the industry needs right now.`;
+    `<strong>What this means for AGL.</strong> Emissions intensity connects generation mix decisions to scope 2 costs, TCFD disclosures, and corporate decarbonisation targets. A customer buying electricity from a coal-heavy grid pays a very different scope 2 bill than one buying from a predominantly renewable portfolio. Being able to model how intensity changes under different coal retirement or renewables build scenarios is a commercially valuable skill — and exactly the kind of analysis this data makes possible.`;
 
   /* ══ SECTION 04: MARKET VALUE ═══════════════════════════════════════════ */
   const mv12Coal  = sum12('mvCoal');
@@ -310,17 +310,17 @@ function buildNarratives(data) {
   const batImplied = batMWh12 > 0 ? mv12Bat / (batMWh12 * 1000) : null;  // AUD/MWh
 
   document.getElementById('kf-04').innerHTML =
-    `Clean generation captured <strong>${cleanShare.toFixed(0)}%</strong> of NEM market revenue in the past 12 months: worth <strong>${fmtB(mv12Clean)}</strong> out of a total NEM market of <strong>${fmtB(mv12Total)}</strong>. Wind and solar combined now out-earn gas, a commercial shift that would have seemed implausible a decade ago.`;
+    `In the past 12 months, clean generation earned <strong>${fmtB(mv12Clean)}</strong> of NEM market revenue — <strong>${cleanShare.toFixed(0)}%</strong> of the total market of <strong>${fmtB(mv12Total)}</strong>. Wind and solar combined now out-earn gas. That's not just an energy transition story — it's a commercial one, and it changes the investment calculus for every player in the market.`;
 
   document.getElementById('sb-04').innerHTML = bullets([
-    `Coal earned <strong>${fmtB(mv12Coal)}</strong> in the past 12 months: still significant, but declining as plant retirements reduce output and merchant risk increases. When a coal plant retires, its revenue doesn't disappear; it transfers to whatever dispatchable capacity replaces it.`,
-    `Wind earned <strong>${fmtB(mv12Wind)}</strong> and solar <strong>${fmtB(mv12Solar)}</strong>: combined, <strong>${fmtB(mv12Wind + mv12Solar)}</strong>, compared to gas at <strong>${fmtB(mv12Gas)}</strong>. This is the commercial signal driving investment decisions in the current NEM.`,
-    batImplied ? `Battery storage earned <strong>${fmtM(mv12Bat)}</strong> over the past 12 months, at an implied value of <strong>$${fmt(batImplied, 0)}/MWh</strong> discharged: roughly <strong>${(batImplied / avg12('price')).toFixed(1)}×</strong> the average grid price. Batteries earn a premium by discharging precisely when prices spike.` : '',
-    `Market value concentration is a key NEM feature: a small number of high-price intervals drive a disproportionate share of total revenue. Identifying and predicting these windows is the basis of battery dispatch strategy, gas peaker operation, and forward contract pricing.`,
+    `Coal earned <strong>${fmtB(mv12Coal)}</strong> over the past year. That's still the largest single fuel-type revenue in most periods — but coal earns that by running constantly at baseload prices, while renewables earn less per MWh but are adding capacity much faster. When a coal plant retires, its revenue doesn't vanish. It gets redistributed to whatever fills the gap.`,
+    `Wind earned <strong>${fmtB(mv12Wind)}</strong>, solar earned <strong>${fmtB(mv12Solar)}</strong>. Combined — <strong>${fmtB(mv12Wind + mv12Solar)}</strong> — that's more than gas at <strong>${fmtB(mv12Gas)}</strong>. This is the number that tells investors where to build next.`,
+    batImplied ? `Battery storage earned <strong>${fmtM(mv12Bat)}</strong> at an implied rate of <strong>$${fmt(batImplied, 0)}/MWh</strong> discharged — roughly <strong>${(batImplied / avg12('price')).toFixed(1)}×</strong> the average grid price. Batteries don't earn by generating a lot of energy. They earn by generating at the exact right moment. That's a fundamentally different business model from any other technology on the grid.` : '',
+    `The NEM concentrates value in a small number of high-price intervals. A few hours per month can account for a disproportionate share of annual generator revenue. That's why battery dispatch optimisation, peaker contract timing, and forward curve shape all matter so much — the money is in the peaks, not the average.`,
   ].filter(Boolean));
 
   document.getElementById('st-04').innerHTML =
-    `<strong>So what?</strong> Market value data tells you more than generation data alone. A fuel technology's share of revenue: and whether that share is above or below its share of generation: reveals its pricing power and market position. An analyst who can build this view from raw generation and price data, and explain the commercial logic behind it, is working at the level that matters to trading, strategy, and investment teams.`;
+    `<strong>What this means for AGL.</strong> Revenue share analysis reveals pricing power. A technology that earns more than its generation share (batteries, gas peakers) is capturing high-price intervals. One that earns less (sometimes solar, in over-supplied midday periods) is being compressed by competition. Building this view from raw price and energy data, and updating it monthly, is exactly the kind of work that informs hedging strategy, asset valuation, and investment decisions.`;
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -335,19 +335,19 @@ function chartEnergyMix(data) {
       labels,
       datasets: [
         { label: 'Coal',      data: data.map(d => d.coal.toFixed(0)),
-          backgroundColor: 'rgba(73,80,99,0.82)',    borderColor: '#495063', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
+          backgroundColor: 'rgba(90,82,74,0.85)',    borderColor: '#5a524a', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
         { label: 'Gas',       data: data.map(d => d.gas.toFixed(0)),
-          backgroundColor: 'rgba(232,89,12,0.72)',   borderColor: '#e8590c', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
+          backgroundColor: 'rgba(184,115,51,0.70)',   borderColor: '#b87333', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
         { label: 'Hydro',     data: data.map(d => d.hydro.toFixed(0)),
-          backgroundColor: 'rgba(59,91,219,0.68)',   borderColor: '#3b5bdb', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
+          backgroundColor: 'rgba(74,108,154,0.68)',   borderColor: '#4a6c9a', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
         { label: 'Wind',      data: data.map(d => d.wind.toFixed(0)),
-          backgroundColor: 'rgba(32,178,170,0.68)',  borderColor: '#20b2aa', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
+          backgroundColor: 'rgba(74,124,106,0.70)',  borderColor: '#4a7c6a', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
         { label: 'Solar',     data: data.map(d => d.solar.toFixed(0)),
-          backgroundColor: 'rgba(208,135,0,0.78)',   borderColor: '#d08700', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
+          backgroundColor: 'rgba(196,152,42,0.78)',   borderColor: '#c4982a', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
         { label: 'Bioenergy', data: data.map(d => d.bio.toFixed(0)),
-          backgroundColor: 'rgba(47,158,68,0.68)',   borderColor: '#2f9e44', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
+          backgroundColor: 'rgba(106,140,84,0.68)',   borderColor: '#4a7c6a', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
         { label: 'Battery',   data: data.map(d => d.batD.toFixed(0)),
-          backgroundColor: 'rgba(156,79,217,0.68)',  borderColor: '#9c4fd9', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
+          backgroundColor: 'rgba(122,84,144,0.70)',  borderColor: '#7a5490', borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
       ],
     },
     options: {
@@ -383,10 +383,10 @@ function chartRenewPct(data) {
       labels,
       datasets: [
         { label: 'Monthly renewable %',
-          data: renewPct, borderColor: 'rgba(47,158,68,0.35)', backgroundColor: 'transparent',
+          data: renewPct, borderColor: 'rgba(74,124,106,0.35)', backgroundColor: 'transparent',
           borderWidth: 1, pointRadius: 0, tension: 0.2 },
         { label: '12-month rolling avg',
-          data: rolling,  borderColor: '#2f9e44', backgroundColor: 'rgba(47,158,68,0.08)',
+          data: rolling,  borderColor: '#4a7c6a', backgroundColor: 'rgba(47,158,68,0.08)',
           borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true },
       ],
     },
@@ -417,11 +417,11 @@ function chartPrice(data) {
       labels,
       datasets: [
         { label: 'VWAP (AUD/MWh)',
-          data: prices, borderColor: '#1d4ed8', backgroundColor: 'rgba(29,78,216,0.06)',
+          data: prices, borderColor: '#4a6c9a', backgroundColor: 'rgba(74,108,154,0.06)',
           borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4, tension: 0.25, fill: true },
         { label: `Spike (> p95 = $${p95.toFixed(0)})`,
           data: prices.map(p => p > p95 ? p : NaN),
-          borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.15)',
+          borderColor: '#b44430', backgroundColor: 'rgba(180,68,48,0.15)',
           borderWidth: 2, pointRadius: 3, pointBackgroundColor: '#dc2626', tension: 0.2, fill: true },
       ],
     },
@@ -457,7 +457,7 @@ function chartPriceHist(data) {
       datasets: [{ label: 'Months',
         data: counts,
         backgroundColor: counts.map((_, i) =>
-          i > 8 ? 'rgba(220,38,38,0.65)' : 'rgba(29,78,216,0.55)'),
+          i > 8 ? 'rgba(180,68,48,0.65)' : 'rgba(74,108,154,0.55)'),
         borderColor: counts.map((_, i) =>
           i > 8 ? '#dc2626' : '#1d4ed8'),
         borderWidth: 1 }],
@@ -485,7 +485,7 @@ function chartPriceRolling(data) {
       labels,
       datasets: [{
         label: 'Rolling 12-month avg (AUD/MWh)',
-        data: rolling, borderColor: '#ea580c', backgroundColor: 'rgba(234,88,12,0.07)',
+        data: rolling, borderColor: '#b87333', backgroundColor: 'rgba(184,115,51,0.07)',
         borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true,
       }],
     },
@@ -514,10 +514,10 @@ function chartIntensity(data) {
       labels,
       datasets: [
         { label: 'Monthly intensity',
-          data: intensity, borderColor: 'rgba(220,38,38,0.3)', backgroundColor: 'transparent',
+          data: intensity, borderColor: 'rgba(180,68,48,0.3)', backgroundColor: 'transparent',
           borderWidth: 1, pointRadius: 0, tension: 0.2 },
         { label: '12-month rolling avg',
-          data: rolling,   borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.06)',
+          data: rolling,   borderColor: '#b44430', backgroundColor: 'rgba(180,68,48,0.06)',
           borderWidth: 2,  pointRadius: 0, tension: 0.4, fill: true },
       ],
     },
@@ -551,15 +551,15 @@ function chartEmissionsStacked(data) {
       datasets: [
         { label: 'Coal (Brown)',
           data: data.map(d => (d.emCoalBrown / 1e6).toFixed(3)),
-          backgroundColor: 'rgba(71, 85, 105, 0.85)', borderColor: '#475569',
+          backgroundColor: 'rgba(90,82,74,0.85)', borderColor: '#475569',
           borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
         { label: 'Coal (Black)',
           data: data.map(d => (d.emCoalBlack / 1e6).toFixed(3)),
-          backgroundColor: 'rgba(100, 116, 139, 0.8)', borderColor: '#64748b',
+          backgroundColor:  'rgba(138,126,120,0.80)', borderColor: '#64748b',
           borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
         { label: 'Gas',
           data: data.map(d => (d.emGas / 1e6).toFixed(3)),
-          backgroundColor: 'rgba(234, 88, 12, 0.65)', borderColor: '#ea580c',
+          backgroundColor: 'rgba(184,115,51,0.65)', borderColor: '#b87333',
           borderWidth: 0, fill: true, tension: 0.3, pointRadius: 0 },
       ],
     },
@@ -595,10 +595,10 @@ function chartMvTrend(data) {
       labels,
       datasets: [
         { label: 'Clean (12m rolling avg)',
-          data: rolling12_clean,  borderColor: '#2f9e44', backgroundColor: 'rgba(47,158,68,0.08)',
+          data: rolling12_clean,  borderColor: '#4a7c6a', backgroundColor: 'rgba(47,158,68,0.08)',
           borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true },
         { label: 'Fossil (12m rolling avg)',
-          data: rolling12_fossil, borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,0.06)',
+          data: rolling12_fossil, borderColor: '#b44430', backgroundColor: 'rgba(180,68,48,0.06)',
           borderWidth: 2, pointRadius: 0, tension: 0.4, fill: true },
       ],
     },
@@ -1078,6 +1078,10 @@ function main(data) {
 
   initSqlTabs();
   hideLoading();
+
+  // Must be last: hides all sections except the active tab.
+  // Charts must already exist before this runs.
+  TabManager.init();
 }
 
 showLoading();
@@ -1256,7 +1260,7 @@ function chartEmissionsDonut_slice(last12) {
     data: {
       labels,
       datasets: [{ data: values,
-        backgroundColor: ['#495063','#6b7280','#e8590c','#2f9e44'],
+        backgroundColor: ['#5a524a','#8a7e78','#b87333','#6a8c54'],
         borderColor: 'rgba(240,242,248,.6)', borderWidth: 3 }],
     },
     options: {
@@ -1293,12 +1297,94 @@ function chartMvBar_slice(last12) {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` $${ctx.raw}B AUD` } } },
       scales: {
-        x: { ticks: { callback: v => `$${v}B` }, title: { display: true, text: 'A$ Billion', color: '#9ca3af' } },
-        y: { ticks: { color: '#4b5563' } },
+        x: { ticks: { callback: v => `$${v}B` }, title: { display: true, text: 'A$ Billion', color: '#9a8e84' } },
+        y: { ticks: { color: '#4e4740' } },
       },
     },
   });
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TAB MANAGER
+   Shows/hides sections when nav tabs are clicked.
+   Charts initialise with all sections visible, then TabManager takes over.
+   Chart.js resizes automatically when its container becomes visible again.
+   ══════════════════════════════════════════════════════════════════════════ */
+const TabManager = {
+
+  TABS: {
+    home:           { els: ['#hero', '.agl-bridge'],  filter: false },
+    live:           { els: ['#live'],                 filter: false },
+    transition:     { els: ['#transition'],           filter: true  },
+    prices:         { els: ['#prices'],               filter: true  },
+    emissions:      { els: ['#emissions'],            filter: true  },
+    'market-value': { els: ['#market-value'],         filter: true  },
+    sql:            { els: ['#sql'],                  filter: false },
+    literacy:       { els: ['#literacy'],             filter: false },
+  },
+
+  // Everything that can be shown/hidden
+  ALL: ['#hero', '.agl-bridge', '#live', '#transition',
+        '#prices', '#emissions', '#market-value', '#sql', '#literacy'],
+
+  current: null,
+
+  show(tabId) {
+    if (!this.TABS[tabId]) tabId = 'home';
+    const tab = this.TABS[tabId];
+
+    // Hide all sections
+    this.ALL.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.style.display = 'none';
+    });
+
+    // Show this tab's elements
+    tab.els.forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.style.display = '';
+    });
+
+    // Filter bar: only on historical-analysis tabs
+    const fb = document.getElementById('filter-bar');
+    if (fb) fb.style.display = tab.filter ? '' : 'none';
+
+    // Active state on nav links
+    document.querySelectorAll('.nav-links a[data-tab]').forEach(a => {
+      a.classList.toggle('nav-tab-active', a.dataset.tab === tabId);
+    });
+
+    // Scroll to top of content, then let Chart.js resize
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 60);
+
+    // Push history so back/forward works
+    if (this.current !== tabId) {
+      history.pushState({ tab: tabId }, '', '#' + tabId);
+    }
+    this.current = tabId;
+  },
+
+  init() {
+    // Wire up nav click handlers
+    document.querySelectorAll('.nav-links a[data-tab]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        this.show(a.dataset.tab);
+      });
+    });
+
+    // Browser back/forward
+    window.addEventListener('popstate', e => {
+      const tabId = e.state?.tab || location.hash.slice(1) || 'home';
+      this.show(tabId);
+    });
+
+    // On load: honour the URL hash, default to home
+    const hash = location.hash.slice(1);
+    this.show(this.TABS[hash] ? hash : 'home');
+  },
+};
 
 /* ── Navbar scroll effect ────────────────────────────────────────────────── */
 window.addEventListener('scroll', () => {
@@ -1437,7 +1523,7 @@ async function loadRegionData() {
 }
 
 function chartRegionPrice(labels, prices) {
-  const clrs = ['#3b5bdb','#e8590c','#9c4fd9','#20b2aa','#2f9e44'];
+  const clrs = ['#4a6c9a','#b87333','#7a5490','#4a7c6a','#5a524a'];
   new Chart(document.getElementById('chart-region-price'), {
     type: 'bar',
     data: {
@@ -1456,16 +1542,16 @@ function chartRegionPrice(labels, prices) {
         tooltip: { callbacks: { label: ctx => ` $${ctx.raw}/MWh` } },
       },
       scales: {
-        x: { ticks: { color: '#4b5563' } },
+        x: { ticks: { color: '#4e4740' } },
         y: { ticks: { callback: v => `$${v}` },
-             title: { display: true, text: 'AUD / MWh', color: '#9ca3af' } },
+             title: { display: true, text: 'AUD / MWh', color: '#9a8e84' } },
       },
     },
   });
 }
 
 function chartRegionRenew(labels, renews) {
-  const clrs = ['#3b5bdb','#e8590c','#9c4fd9','#20b2aa','#2f9e44'];
+  const clrs = ['#4a6c9a','#b87333','#7a5490','#4a7c6a','#5a524a'];
   new Chart(document.getElementById('chart-region-renew'), {
     type: 'bar',
     data: {
@@ -1484,10 +1570,10 @@ function chartRegionRenew(labels, renews) {
         tooltip: { callbacks: { label: ctx => ` ${ctx.raw}%` } },
       },
       scales: {
-        x: { ticks: { color: '#4b5563' } },
+        x: { ticks: { color: '#4e4740' } },
         y: { min: 0, max: 100,
              ticks: { callback: v => `${v}%` },
-             title: { display: true, text: '% of generation', color: '#9ca3af' } },
+             title: { display: true, text: '% of generation', color: '#9a8e84' } },
       },
     },
   });
@@ -1542,7 +1628,6 @@ async function loadLiveData() {
   updateLiveKPIs({ avgPriceThis, avgPriceLast, avgRenewThis, avgRenewLast, avgDemandThis, peakPrice });
 
   // Multi-variable regression: price ~ a + b*renewables + c*demand
-  const demandThis = allDemand.filter(thisWeek).filter(p => p.val !== null);
   const mvReg = multiVarRegression(priceThis, renewThis, demandThis);
 
   updateLiveInsights({ priceThis, renewThis, avgPriceThis, avgPriceLast, avgRenewThis, peakPrice, mvReg });
@@ -1623,17 +1708,17 @@ function updateLiveInsights({ priceThis, renewThis, avgPriceThis, avgPriceLast, 
     : '';
 
   document.getElementById('kf-live-text').innerHTML =
-    `Average NEM price this week: <strong>$${avgPriceThis?.toFixed(0)}/MWh</strong>: ${changeText}. Renewables supplied <strong>${avgRenewThis?.toFixed(0)}%</strong> of generation on average.` + mvLine;
+    `The NEM averaged <strong>$${avgPriceThis?.toFixed(0)}/MWh</strong> this week, ${changeText}, with renewables at <strong>${avgRenewThis?.toFixed(0)}%</strong> of generation.` + mvLine;
 
   document.getElementById('sb-live').innerHTML = bullets([
-    peakTimeStr ? `The highest hourly price was <strong>$${peakHour.val.toFixed(0)}/MWh</strong> at <strong>${peakTimeStr}</strong>${peakRenew !== null ? `, when renewables were supplying just <strong>${peakRenew.toFixed(0)}%</strong> of generation` : ''}. This pattern: low renewables at evening peak → gas and coal set the marginal price: is the core NEM dispatch mechanism.` : '',
-    spikeHours > 0 ? `<strong>${spikeHours} hours</strong> exceeded $200/MWh this week. These intervals are where battery storage and gas peakers earn disproportionate revenue: a key consideration for AGL's dispatch strategy.` : `No hours exceeded $200/MWh this week: adequate dispatchable supply or above-average renewables kept the market calm.`,
-    mvReg && mvReg.b_demand != null ? `Demand contribution: each additional GWh of operational demand is associated with <strong>$${mvReg.b_demand.toFixed(1)}/MWh</strong> in price (holding renewables constant). ${Math.abs(mvReg.b_demand) > Math.abs(mvReg.b_renew) ? 'This week demand is the stronger price driver.' : 'This week renewables are the stronger price driver.'}` : '',
-    `The regional charts below show why NEM-wide averages can mislead: SA's high renewables (mostly wind) create very different price dynamics from coal-heavy QLD, with interconnectors acting as a partial price equaliser.`,
+    peakTimeStr ? `Peak price: <strong>$${peakHour.val.toFixed(0)}/MWh</strong> at <strong>${peakTimeStr}</strong>${peakRenew !== null ? `, when renewables were at <strong>${peakRenew.toFixed(0)}%</strong>` : ''}. That's the NEM's fundamental dynamic in one data point: solar drops off in the evening, demand peaks, and gas or coal sets the marginal price.` : '',
+    spikeHours > 0 ? `<strong>${spikeHours} hours</strong> crossed $200/MWh this week. Those intervals are where batteries and gas peakers earn most of their annual revenue in a handful of hours — which is why dispatch timing matters as much as installed capacity.` : `No hours exceeded $200/MWh this week — either renewables were high enough to suppress prices throughout, or demand stayed moderate. The hourly chart below will show which.`,
+    mvReg && mvReg.b_demand != null ? `A simple two-variable model estimates each additional GWh of demand adds <strong>$${mvReg.b_demand.toFixed(1)}/MWh</strong> to price (holding renewables constant), while each 1% more renewables moves price by <strong>$${mvReg.b_renew.toFixed(1)}/MWh</strong>. ${Math.abs(mvReg.b_demand) > Math.abs(mvReg.b_renew) ? 'This week, demand is the stronger driver.' : 'This week, renewables are the stronger driver.'}` : '',
+    `SA and TAS tell a different story from QLD in the regional charts below. SA runs on mostly wind and has very different price patterns from coal-heavy QLD. The interconnectors between them partially arbitrage the difference — but not completely, which is why region matters in any NEM price analysis.`,
   ].filter(Boolean));
 
   document.getElementById('st-live').innerHTML =
-    `<strong>Correlation vs causation:</strong> The two-variable model (price ~ renewables + demand) is a more defensible framing than a simple r value: it isolates the renewables effect holding demand constant. The R² shows how much of this week's price variance is explained by these two factors alone. What it misses: fuel costs, plant outages, and interconnector constraints, which are the "residual" in any price model.`;
+    `<strong>A note on the model.</strong> The scatter chart shows a two-variable regression: price explained by renewables and demand together. That's more defensible than a simple correlation because it holds demand constant when measuring the renewables effect. The R² tells you how much of this week's price variance those two factors explain. The rest — gas availability, plant outages, interconnector limits — is what energy analysts spend their days tracking.`;
 }
 
 /* ── Chart: Dual-axis price + renewable proportion line ─────────────────── */
@@ -1648,10 +1733,10 @@ function chartLiveMain(priceData, renewData) {
       labels,
       datasets: [
         { label: 'Price (AUD/MWh)',
-          data: priceVals, borderColor: '#1d4ed8', backgroundColor: 'rgba(29,78,216,0.05)',
+          data: priceVals, borderColor: '#4a6c9a', backgroundColor: 'rgba(74,108,154,0.05)',
           borderWidth: 1.5, pointRadius: 0, tension: 0.2, fill: true, yAxisID: 'y' },
         { label: 'Renewable % (right axis)',
-          data: renewVals, borderColor: '#2f9e44', backgroundColor: 'rgba(22,163,74,0.06)',
+          data: renewVals, borderColor: '#4a7c6a', backgroundColor: 'rgba(74,124,106,0.06)',
           borderWidth: 1.5, pointRadius: 0, tension: 0.2, fill: true, yAxisID: 'y1' },
       ],
     },
@@ -1663,10 +1748,10 @@ function chartLiveMain(priceData, renewData) {
       scales: {
         x: { ticks: { maxTicksLimit: 14, maxRotation: 0, font: { size: 10 } } },
         y: { position: 'left',  ticks: { callback: v => `$${v}` },
-             title: { display: true, text: 'AUD / MWh', color: '#1d4ed8' } },
+             title: { display: true, text: 'AUD / MWh', color: '#4a6c9a' } },
         y1:{ position: 'right', grid: { drawOnChartArea: false },
              ticks: { callback: v => `${v}%` },
-             title: { display: true, text: 'Renewable %', color: '#16a34a' } },
+             title: { display: true, text: 'Renewable %', color: '#4a7c6a' } },
       },
     },
   });
@@ -1696,10 +1781,10 @@ function chartLiveScatter(priceData, renewData, mvReg) {
 
   // Color by price level
   const colors = points.map(p =>
-    p.y > 200 ? 'rgba(220,38,38,0.7)' :
-    p.y > 100 ? 'rgba(234,88,12,0.65)' :
-    p.y < 20  ? 'rgba(22,163,74,0.7)' :
-                'rgba(29,78,216,0.45)');
+    p.y > 200 ? 'rgba(180,68,48,0.7)' :
+    p.y > 100 ? 'rgba(184,115,51,0.65)' :
+    p.y < 20  ? 'rgba(74,124,106,0.7)' :
+                'rgba(74,108,154,0.45)');
 
   // Build regression label
   let regLabel = 'Trend (simple regression)';
@@ -1744,10 +1829,10 @@ function chartLiveHourly(priceData) {
   const labels    = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
   const overall   = avgByHour.filter(v => v !== null).reduce((a, b, _, arr) => a + b / arr.length, 0);
   const colors    = avgByHour.map(v => v === null ? 'transparent' :
-    v > overall * 1.4 ? 'rgba(220,38,38,0.7)' :
-    v > overall * 1.1 ? 'rgba(234,88,12,0.65)' :
-    v < overall * 0.7 ? 'rgba(22,163,74,0.7)' :
-                        'rgba(29,78,216,0.55)');
+    v > overall * 1.4 ? 'rgba(180,68,48,0.7)' :
+    v > overall * 1.1 ? 'rgba(184,115,51,0.65)' :
+    v < overall * 0.7 ? 'rgba(74,124,106,0.7)' :
+                        'rgba(74,108,154,0.55)');
 
   new Chart(document.getElementById('chart-live-hourly'), {
     type: 'bar',

@@ -16,13 +16,14 @@
         <span>AGL Portfolio</span>
       </a>
       <ul class="nav-links">
-        <li><a href="#live" class="nav-live">⚡ This Week</a></li>
-        <li><a href="#transition">Energy Mix</a></li>
-        <li><a href="#prices">Prices</a></li>
-        <li><a href="#emissions">Emissions</a></li>
-        <li><a href="#market-value">Market Value</a></li>
-        <li><a href="#sql">SQL</a></li>
-        <li><a href="#literacy">Market Literacy</a></li>
+        <li><a href="#home"         data-tab="home">Home</a></li>
+        <li><a href="#live"         data-tab="live"         class="nav-live">⚡ This Week</a></li>
+        <li><a href="#transition"   data-tab="transition">Energy Mix</a></li>
+        <li><a href="#prices"       data-tab="prices">Prices</a></li>
+        <li><a href="#emissions"    data-tab="emissions">Emissions</a></li>
+        <li><a href="#market-value" data-tab="market-value">Market Value</a></li>
+        <li><a href="#sql"          data-tab="sql">SQL</a></li>
+        <li><a href="#literacy"     data-tab="literacy">Market Literacy</a></li>
       </ul>
       <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -33,13 +34,13 @@
   <!-- ── HERO ──────────────────────────────────────────────────────────────── -->
   <section class="hero" id="hero">
     <div class="hero-content">
-      <div class="hero-tag">&#9889; Aylin Vahabova &nbsp;&middot;&nbsp; Data Analyst Portfolio</div>
+      <span class="hero-tag">NEM Insights &nbsp;&middot;&nbsp; Aylin Vahabova &nbsp;&middot;&nbsp; March 2026</span>
       <h1 class="hero-title">
-        27 years of Australia's electricity market,<br>
-        <span class="gradient-text">here's what the data shows.</span>
+        Twenty-seven years<br>of Australia's electricity,<br>
+        <em>read as data.</em>
       </h1>
       <p class="hero-subtitle">
-        I pulled every month of NEM generation, price, emissions and market value data since 1998 and asked: what actually drives electricity prices? Where are emissions really coming from? And who's making money as the grid changes? This is what I found.
+        What actually drives electricity prices? Is the grid getting cleaner fast enough? And who earns money as coal declines? I worked through the numbers to find out.
       </p>
       <div class="hero-kpis" id="hero-kpis">
         <div class="kpi-card">
@@ -68,6 +69,7 @@
     <div class="container">
 
       <div class="section-header">
+          <span class="section-num-live">LIVE DATA</span>
           <h2 class="section-title">
             What drove prices this week?
             <span class="live-badge">LIVE</span>
@@ -206,8 +208,9 @@
     <div class="container">
 
       <div class="section-header">
+          <span class="section-num">01</span>
           <h2 class="section-title">The Energy Transition</h2>
-          <p class="section-desc">How Australia's generation mix changed from near-total fossil fuel dependence to a grid where renewables now supply close to half of all electricity</p>
+          <p class="section-desc">In 1999 coal powered nearly 80% of the NEM. Today it's closer to 50% and falling. This is what that shift looks like in the data — and how fast it actually happened.</p>
         </div>
       </div>
 
@@ -253,8 +256,9 @@
     <div class="container">
 
       <div class="section-header">
+          <span class="section-num">02</span>
           <h2 class="section-title">The Price Story</h2>
-          <p class="section-desc">Volume-weighted average prices across 27 years: the level has risen, but the real story is volatility</p>
+          <p class="section-desc">Prices have roughly doubled since the early 2000s — but that's not the interesting part. The interesting part is how much more volatile the market has become, and why.</p>
         </div>
       </div>
 
@@ -312,8 +316,9 @@
     <div class="container">
 
       <div class="section-header">
+          <span class="section-num">03</span>
           <h2 class="section-title">Emissions Scoreboard</h2>
-          <p class="section-desc">The grid is getting cleaner: but the pace of decarbonisation and the role of coal in the remaining emissions picture tell a more complicated story</p>
+          <p class="section-desc">The grid's carbon intensity has halved since 1998 — but coal still causes far more emissions than its generation share suggests. Here's why the last phase of decarbonisation is the hardest.</p>
         </div>
       </div>
 
@@ -371,8 +376,9 @@
     <div class="container">
 
       <div class="section-header">
+          <span class="section-num">04</span>
           <h2 class="section-title">Market Value</h2>
-          <p class="section-desc">The commercial story: who earns what in the NEM, and how the revenue split between fossil and clean generation has shifted</p>
+          <p class="section-desc">Follow the money. Wind and solar now out-earn gas in the NEM — a commercial flip that tells you more about where the energy system is heading than any policy document.</p>
         </div>
       </div>
 
@@ -418,8 +424,9 @@
     <div class="container">
 
       <div class="section-header">
+          <span class="section-num">05</span>
           <h2 class="section-title">SQL Showcase</h2>
-          <p class="section-desc">The queries behind the analysis: window functions, CTEs, and energy-domain logic written against the star schema below</p>
+          <p class="section-desc">Every number in this portfolio came from somewhere. Here are the queries — window functions, LOD-style CTEs, percentile spike detection — written against a clean star schema built from the same Open Electricity data.</p>
         </div>
       </div>
 
@@ -472,8 +479,9 @@
     <div class="container">
 
       <div class="section-header">
+          <span class="section-num">06</span>
           <h2 class="section-title">Market Literacy</h2>
-          <p class="section-desc">The AEMO concepts and frameworks that underpin every number in this analysis</p>
+          <p class="section-desc">The NEM is one of the world's most complex electricity markets. These are the concepts you need to understand before the numbers in this analysis make full sense.</p>
         </div>
       </div>
 
