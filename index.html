@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AGL Portfolio | NEM Insights | Aylin Vahabova</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a class="nav-logo" href="#hero">
+        <span class="logo-bolt">&#9889;</span>
+        <span>AGL Portfolio</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#live" class="nav-live">⚡ This Week</a></li>
+        <li><a href="#transition">Energy Mix</a></li>
+        <li><a href="#prices">Prices</a></li>
+        <li><a href="#emissions">Emissions</a></li>
+        <li><a href="#market-value">Market Value</a></li>
+        <li><a href="#sql">SQL</a></li>
+        <li><a href="#literacy">Market Literacy</a></li>
+      </ul>
+      <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── HERO ──────────────────────────────────────────────────────────────── -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <div class="hero-tag">&#9889; Aylin Vahabova &nbsp;&middot;&nbsp; Data Analyst Portfolio</div>
+      <h1 class="hero-title">
+        27 years of Australia's electricity market,<br>
+        <span class="gradient-text">here's what the data shows.</span>
+      </h1>
+      <p class="hero-subtitle">
+        I pulled every month of NEM generation, price, emissions and market value data since 1998 and asked: what actually drives electricity prices? Where are emissions really coming from? And who's making money as the grid changes? This is what I found.
+      </p>
+      <div class="hero-kpis" id="hero-kpis">
+        <div class="kpi-card">
+          <div class="kpi-value" id="kpi-years">...</div>
+          <div class="kpi-label">Years of NEM data</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value" id="kpi-twh">...</div>
+          <div class="kpi-label">Total TWh generated</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value" id="kpi-renew">...</div>
+          <div class="kpi-label">Renewables, latest month</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-value" id="kpi-intensity">...</div>
+          <div class="kpi-label">CO₂ intensity, latest month</div>
+        </div>
+      </div>
+      <p class="hero-meta">Data: Open Electricity · NEM-wide · Dec 1998 – Feb 2026 · Extracted Mar 2026 · CC BY-NC 4.0</p>
+    </div>
+  </section>
+
+  <!-- ── LIVE: WHAT DROVE PRICES THIS WEEK? ───────────────────────────────── -->
+  <section class="page-section section-alt" id="live">
+    <div class="container">
+
+      <div class="section-header">
+          <h2 class="section-title">
+            What drove prices this week?
+            <span class="live-badge">LIVE</span>
+          </h2>
+          <p class="section-desc">Hourly NEM data via the Open Electricity API: last 7 days vs the 7 days before</p>
+        </div>
+      </div>
+
+      <div class="live-kpis" id="live-kpis">
+        <div class="kpi-card"><div class="kpi-pulse"></div><div class="kpi-label">Loading…</div></div>
+        <div class="kpi-card"><div class="kpi-pulse"></div><div class="kpi-label">Loading…</div></div>
+        <div class="kpi-card"><div class="kpi-pulse"></div><div class="kpi-label">Loading…</div></div>
+        <div class="kpi-card"><div class="kpi-pulse"></div><div class="kpi-label">Loading…</div></div>
+      </div>
+
+      <div class="key-finding" id="kf-live">
+        <div class="kf-eyebrow">This week in the NEM</div>
+        <p id="kf-live-text">Fetching live market data…</p>
+      </div>
+
+      <ul class="story-bullets" id="sb-live">
+        <li class="loading-text-sm">Loading…</li>
+      </ul>
+
+      <div class="chart-grid-2">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Price vs Renewable Proportion: Last 7 Days (Hourly)</h3>
+            <p>When renewables surge, prices typically fall: the core NEM price suppression effect</p>
+          </div>
+          <div class="chart-wrap chart-tall">
+            <canvas id="chart-live-main"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Price vs Renewables: Scatter</h3>
+            <p>Each point is one hourly interval. The slope of the trend line shows the price suppression rate</p>
+          </div>
+          <div class="chart-wrap chart-tall">
+            <canvas id="chart-live-scatter"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid-1">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Average Price by Hour of Day: Last 7 Days</h3>
+            <p>The daily price pattern: solar suppresses midday prices; the evening demand ramp drives the highest prices</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-live-hourly"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid-2" style="margin-top:16px">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Average Price by Region: Last 12 Months</h3>
+            <p>Why regions diverge: interconnector constraints, local fuel mix, and demand peaks</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-region-price"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Renewable Proportion by Region: Last 12 Months</h3>
+            <p>SA and TAS lead; QLD and NSW still fossil-heavy. SA high renewables yet not cheapest: the storage gap</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-region-renew"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="method-note">
+        <strong>Method:</strong> All metrics are NEM operational demand: scheduled + semi-scheduled generation only, excluding behind-the-meter rooftop solar. "Renewable proportion" = (wind + utility solar + hydro + bioenergy) ÷ operational demand. Market value = dispatch price × energy at each 5-min interval, summed. Emissions use NGA combustion factors per fuel type. Price is volume-weighted average (VWAP). Regional data via Open Electricity API; historical data from Open Electricity CSV export.
+      </div>
+
+      <div class="section-takeaway" id="st-live">
+        <p>Loading analysis…</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── AGL BRIDGE ───────────────────────────────────────────────────────── -->
+  <div class="agl-bridge">
+    <div class="container">
+      <p class="bridge-eyebrow">Why this analysis matters to AGL</p>
+      <div class="bridge-grid">
+        <div class="bridge-card">
+          <div class="bridge-icon">📈</div>
+          <h4>Price volatility → Hedging exposure</h4>
+          <p>Identifying spike windows and their generation-mix drivers helps quantify trading exposure and structure forward contracts around high-risk intervals.</p>
+        </div>
+        <div class="bridge-card">
+          <div class="bridge-icon">☀️</div>
+          <h4>Renewables penetration → Shape &amp; negative-price risk</h4>
+          <p>As solar suppresses midday prices and creates negative-price intervals, understanding the hour-by-hour renewable profile is essential for managing portfolio value.</p>
+        </div>
+        <div class="bridge-card">
+          <div class="bridge-icon">🌿</div>
+          <h4>Emissions intensity → Decarb reporting &amp; strategy</h4>
+          <p>Tracking grid intensity and fuel-source emissions feeds directly into scope&nbsp;2 reporting, TCFD disclosures, and AGL's own decarbonisation commitments.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FILTER BAR ──────────────────────────────────────────────────────── -->
+  <div class="filter-bar" id="filter-bar">
+    <div class="container">
+      <div class="filter-inner">
+        <span class="filter-label">Historical data</span>
+        <div class="filter-presets" id="filter-presets">
+          <button class="preset-btn active" data-start="1998" data-end="2026">All time</button>
+          <button class="preset-btn" data-start="2000" data-end="2014">Coal era (2000–2014)</button>
+          <button class="preset-btn" data-start="2015" data-end="2026">Renewables era (2015+)</button>
+          <button class="preset-btn" data-start="2020" data-end="2026">Since 2020</button>
+        </div>
+        <div class="filter-custom">
+          <select id="filter-start-yr" aria-label="Start year"></select>
+          <span class="filter-dash">to</span>
+          <select id="filter-end-yr" aria-label="End year"></select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 01: THE ENERGY TRANSITION ────────────────────────────────────────── -->
+  <section class="page-section" id="transition">
+    <div class="container">
+
+      <div class="section-header">
+          <h2 class="section-title">The Energy Transition</h2>
+          <p class="section-desc">How Australia's generation mix changed from near-total fossil fuel dependence to a grid where renewables now supply close to half of all electricity</p>
+        </div>
+      </div>
+
+      <div class="key-finding">
+        <div class="kf-eyebrow">Key finding</div>
+        <p id="kf-01">Loading…</p>
+      </div>
+
+      <ul class="story-bullets" id="sb-01">
+        <li class="loading-text-sm">Loading…</li>
+      </ul>
+
+      <div class="chart-grid-2">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>NEM Generation Mix (GWh / month)</h3>
+            <p>Every fuel technology stacked: the coal plateau, the gas bridge, and the renewables climb</p>
+          </div>
+          <div class="chart-wrap chart-tall">
+            <canvas id="chart-mix"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Renewable Share Over Time</h3>
+            <p>Monthly % and 12-month rolling average: the acceleration after 2015 is unmistakeable</p>
+          </div>
+          <div class="chart-wrap chart-tall">
+            <canvas id="chart-renew-pct"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-takeaway" id="st-01">
+        <p>Loading…</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 02: THE PRICE STORY ───────────────────────────────────────────────── -->
+  <section class="page-section section-alt" id="prices">
+    <div class="container">
+
+      <div class="section-header">
+          <h2 class="section-title">The Price Story</h2>
+          <p class="section-desc">Volume-weighted average prices across 27 years: the level has risen, but the real story is volatility</p>
+        </div>
+      </div>
+
+      <div class="key-finding">
+        <div class="kf-eyebrow">Key finding</div>
+        <p id="kf-02">Loading…</p>
+      </div>
+
+      <ul class="story-bullets" id="sb-02">
+        <li class="loading-text-sm">Loading…</li>
+      </ul>
+
+      <div class="chart-grid-1">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>NEM Volume-Weighted Average Price (AUD/MWh)</h3>
+            <p>Monthly: red highlights months above the 95th percentile</p>
+          </div>
+          <div class="chart-wrap chart-tall">
+            <canvas id="chart-price"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid-2">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Price Distribution</h3>
+            <p>How often prices fall in each band: most months are unremarkable; a few extreme months distort the average</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-price-hist"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Rolling 12-Month Average Price</h3>
+            <p>Structural trend: the 2022 spike and the subsequent fall as renewables expanded</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-price-rolling"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-takeaway" id="st-02">
+        <p>Loading…</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 03: EMISSIONS SCOREBOARD ─────────────────────────────────────────── -->
+  <section class="page-section" id="emissions">
+    <div class="container">
+
+      <div class="section-header">
+          <h2 class="section-title">Emissions Scoreboard</h2>
+          <p class="section-desc">The grid is getting cleaner: but the pace of decarbonisation and the role of coal in the remaining emissions picture tell a more complicated story</p>
+        </div>
+      </div>
+
+      <div class="key-finding">
+        <div class="kf-eyebrow">Key finding</div>
+        <p id="kf-03">Loading…</p>
+      </div>
+
+      <ul class="story-bullets" id="sb-03">
+        <li class="loading-text-sm">Loading…</li>
+      </ul>
+
+      <div class="chart-grid-2">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Grid Emissions Intensity (kgCO₂e / MWh)</h3>
+            <p>The NEM's carbon footprint per unit of electricity: a 50% fall since 1998</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-intensity"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Emissions by Source: Latest 12 Months</h3>
+            <p>Despite being a shrinking share of generation, coal still dominates the emissions mix</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-em-donut"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid-1">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Total Emissions Volume Over Time (Mt CO₂e / month)</h3>
+            <p>Brown coal, black coal, and gas: the three combustion sources that together define the NEM's carbon liability</p>
+          </div>
+          <div class="chart-wrap chart-tall">
+            <canvas id="chart-em-stacked"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-takeaway" id="st-03">
+        <p>Loading…</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 04: MARKET VALUE ──────────────────────────────────────────────────── -->
+  <section class="page-section section-alt" id="market-value">
+    <div class="container">
+
+      <div class="section-header">
+          <h2 class="section-title">Market Value</h2>
+          <p class="section-desc">The commercial story: who earns what in the NEM, and how the revenue split between fossil and clean generation has shifted</p>
+        </div>
+      </div>
+
+      <div class="key-finding">
+        <div class="kf-eyebrow">Key finding</div>
+        <p id="kf-04">Loading…</p>
+      </div>
+
+      <ul class="story-bullets" id="sb-04">
+        <li class="loading-text-sm">Loading…</li>
+      </ul>
+
+      <div class="chart-grid-2">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Market Value by Fuel: Last 12 Months</h3>
+            <p>Total AUD revenue earned by each technology: ranked by size</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-mv-bar"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Clean vs Fossil Revenue: Rolling 12-Month Trend</h3>
+            <p>The crossover: clean generation now earns more market revenue than fossil fuels in many recent periods</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-mv-trend"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-takeaway" id="st-04">
+        <p>Loading…</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 05: SQL SHOWCASE ──────────────────────────────────────────────────── -->
+  <section class="page-section" id="sql">
+    <div class="container">
+
+      <div class="section-header">
+          <h2 class="section-title">SQL Showcase</h2>
+          <p class="section-desc">The queries behind the analysis: window functions, CTEs, and energy-domain logic written against the star schema below</p>
+        </div>
+      </div>
+
+      <div class="sql-tabs" id="sql-tabs"></div>
+      <div class="sql-panels" id="sql-panels"></div>
+
+      <div class="data-model">
+        <h3 class="dm-title">Data Model</h3>
+        <p class="dm-desc">A star schema built from the Open Electricity NEM dataset. The fact tables hold the measurements; dimensions provide context for grouping and filtering.</p>
+        <div class="dm-grid">
+          <div class="dm-table dm-fact">
+            <div class="dm-table-name">fact_market_timeseries</div>
+            <div class="dm-col dm-pk">period_id &nbsp;<em>FK</em></div>
+            <div class="dm-col dm-pk">fueltech_id &nbsp;<em>FK</em></div>
+            <div class="dm-col">energy_gwh</div>
+            <div class="dm-col">emissions_tco2e</div>
+            <div class="dm-col">market_value_aud</div>
+          </div>
+          <div class="dm-table dm-fact">
+            <div class="dm-table-name">fact_network_kpis</div>
+            <div class="dm-col dm-pk">period_id &nbsp;<em>FK</em></div>
+            <div class="dm-col">vwap_aud_mwh</div>
+            <div class="dm-col">emissions_intensity_kg_mwh</div>
+          </div>
+          <div class="dm-table">
+            <div class="dm-table-name">dim_time</div>
+            <div class="dm-col dm-pk">period_id &nbsp;<em>PK</em></div>
+            <div class="dm-col">date</div>
+            <div class="dm-col">year</div>
+            <div class="dm-col">month</div>
+            <div class="dm-col">quarter</div>
+            <div class="dm-col">financial_year</div>
+          </div>
+          <div class="dm-table">
+            <div class="dm-table-name">dim_fueltech</div>
+            <div class="dm-col dm-pk">fueltech_id &nbsp;<em>PK</em></div>
+            <div class="dm-col">fueltech_name</div>
+            <div class="dm-col">fueltech_group</div>
+            <div class="dm-col">is_renewable</div>
+            <div class="dm-col">is_dispatchable</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── 06: MARKET LITERACY ───────────────────────────────────────────────── -->
+  <section class="page-section section-alt" id="literacy">
+    <div class="container">
+
+      <div class="section-header">
+          <h2 class="section-title">Market Literacy</h2>
+          <p class="section-desc">The AEMO concepts and frameworks that underpin every number in this analysis</p>
+        </div>
+      </div>
+
+      <div class="literacy-grid">
+        <div class="literacy-card">
+          <div class="lc-icon">⚡</div>
+          <h3>Dispatch vs Pre-dispatch</h3>
+          <p>The NEM runs a 5-minute dispatch cycle. AEMO's dispatch engine (NEMDE) clears the market every 5 minutes by matching generator offers against demand forecasts. <strong>Pre-dispatch</strong> provides 30-minute ahead price projections: critical for generators hedging intraday positions. The prices in this analysis are settlement prices derived from that dispatch process.</p>
+        </div>
+        <div class="literacy-card">
+          <div class="lc-icon">🔗</div>
+          <h3>Interconnector Flows</h3>
+          <p>Australia's five NEM regions (QLD, NSW, VIC, SA, TAS) are linked by high-voltage interconnectors. Power flows when price differentials exceed transmission losses. Direction is defined by convention: <strong>positive = exports</strong> from the source region. During SA price spikes, imports from VIC via the Heywood interconnector are a key moderating mechanism.</p>
+        </div>
+        <div class="literacy-card">
+          <div class="lc-icon">💲</div>
+          <h3>Volume-Weighted Average Price</h3>
+          <p>The price metric used here is the <strong>VWAP</strong>: each dispatch interval's price weighted by the volume of demand at that interval. The NEM's Market Price Cap is <strong>$16,600/MWh</strong>; the floor is <strong>−$1,000/MWh</strong>. Negative prices occur when renewables oversupply and generators pay to stay dispatched rather than reduce output.</p>
+        </div>
+        <div class="literacy-card">
+          <div class="lc-icon">📊</div>
+          <h3>Operational Demand &amp; the Duck Curve</h3>
+          <p>NEM <strong>operational demand</strong> is met by scheduled and semi-scheduled generators: it excludes behind-the-meter rooftop solar. As rooftop penetration has grown, operational demand has flattened even as consumption rises. The result is the <strong>"duck curve"</strong>: low midday demand followed by a steep evening ramp that gas peakers and batteries increasingly fill.</p>
+        </div>
+        <div class="literacy-card">
+          <div class="lc-icon">🌿</div>
+          <h3>Renewable Proportion</h3>
+          <p>Open Electricity counts scheduled, semi-scheduled, and non-scheduled renewable output (wind, solar, hydro, bioenergy) as a share of total operational demand. <strong>Curtailment</strong>: generation withheld due to grid constraints or negative prices: is reported separately and excluded from generation totals shown in this analysis.</p>
+        </div>
+        <div class="literacy-card">
+          <div class="lc-icon">🏭</div>
+          <h3>Emissions Methodology</h3>
+          <p>Emissions volumes are calculated using <strong>National Greenhouse Account (NGA) factors</strong> per fuel technology. The resulting intensity (kgCO₂e/MWh) is generation-weighted. This covers combustion emissions only: not lifecycle or embodied emissions. It is the methodology used in AEMO's Integrated System Plan modelling.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <div class="footer-logo">
+            <span class="logo-bolt">&#9889;</span>
+            <span>AGL Portfolio</span>
+          </div>
+          <p>Built by <strong>Aylin Vahabova</strong> as a demonstration of energy analytics skills for AGL.</p>
+          <p class="footer-attr">Data: <a href="https://openelectricity.org.au" target="_blank" rel="noopener">Open Electricity</a>: CC BY-NC 4.0. NEM data Dec 1998 &ndash; Feb 2026.</p>
+        </div>
+        <div class="footer-links-group">
+          <div class="footer-links">
+            <h4>Data Source</h4>
+            <a href="https://docs.openelectricity.org.au" target="_blank" rel="noopener">Open Electricity Docs</a>
+            <a href="https://www.aemo.com.au/energy-systems/electricity/national-electricity-market-nem/data-nem/data-dashboard-nem" target="_blank" rel="noopener">AEMO Data Dashboard</a>
+          </div>
+          <div class="footer-links">
+            <h4>Sections</h4>
+            <a href="#live">This Week</a>
+            <a href="#transition">Energy Transition</a>
+            <a href="#prices">Price Story</a>
+            <a href="#emissions">Emissions</a>
+            <a href="#market-value">Market Value</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Aylin Vahabova &nbsp;&middot;&nbsp; CC BY-NC 4.0 Data Attribution &nbsp;&middot;&nbsp; NEM Insights Portfolio</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
+  <script src="assets/js/app.js"></script>
+
+</body>
+</html>
