@@ -1492,16 +1492,14 @@ function multiVarRegression(priceArr, renewArr, demandArr) {
 
 /* ── Region comparison (last 12 months, monthly) ────────────────────────── */
 async function loadRegionData() {
-  // Use last complete month as end (API often 422 if end is current month)
-  const now = new Date();
-  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1 + 1, 0)); // last day of prev month UTC
-  const start = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth() - 11, 1));  // first day of month, 11 months before end (= 12 months of data)
-  const toISO = d => d.toISOString().slice(0, 10) + 'T00:00:00';
+  // Fixed full year in the past to avoid 422 (API can be strict on "current" month)
+  const start = new Date(Date.UTC(2024, 0, 1));   // 2024-01-01
+  const end   = new Date(Date.UTC(2024, 11, 31)); // 2024-12-31
+  const toISO = d => d.toISOString().slice(0, 10) + 'T00:00:00Z';
 
   const data = await apiFetch(
-    `/market/network/NEM?metrics=price&metrics=renewable_proportion` +
-    `&interval=1M&date_start=${toISO(start)}&date_end=${toISO(end)}` +
-    `&primary_grouping=network_region`
+    `/market/network/NEM?metrics=price&metrics=renewable_proportion&interval=1M&primary_grouping=network_region` +
+    `&date_start=${toISO(start)}&date_end=${toISO(end)}`
   );
 
   // Extract per-region averages
@@ -1583,34 +1581,26 @@ function chartRegionRenew(labels, renews) {
 
 /* ── Load 7-day hourly data ─────────────────────────────────────────────── */
 async function loadLiveData() {
-  const now = new Date();
-  // End at least 6 hours ago so API has data (avoids 422 for "future" or incomplete period)
-  const endMs = now.getTime() - 6 * 60 * 60 * 1000;
-  const end = new Date(endMs);
-  end.setMinutes(0, 0, 0);
-  const start7 = new Date(end);
-  start7.setDate(start7.getDate() - 7);
-  const start14 = new Date(end);
-  start14.setDate(start14.getDate() - 14);
+  // Use a fixed 14-day window ending 48 hours ago (API rejects "now" or near-future end)
+  const end = new Date();
+  end.setUTCDate(end.getUTCDate() - 2);
+  end.setUTCHours(23, 0, 0, 0);
+  const start = new Date(end);
+  start.setUTCDate(start.getUTCDate() - 14);
+  const toISO = d => d.toISOString().slice(0, 19) + 'Z';
 
-  const toISO = d => d.toISOString().slice(0, 19);
-
-  // Fetch last 14 days so we can compare this-week vs last-week
-  const [mktData] = await Promise.all([
-    apiFetch(
-      `/market/network/NEM` +
-      `?metrics=price&metrics=renewable_proportion&metrics=demand_energy` +
-      `&interval=1h` +
-      `&date_start=${toISO(start14)}` +
-      `&date_end=${toISO(end)}`
-    ),
-  ]);
+  const mktData = await apiFetch(
+    `/market/network/NEM?metrics=price&metrics=renewable_proportion&metrics=demand_energy&interval=1h` +
+    `&date_start=${toISO(start)}&date_end=${toISO(end)}`
+  );
 
   const allPrice  = findResult(mktData, 'price',                'price_total');
   const allRenew  = findResult(mktData, 'renewable_proportion', 'renewable_proportion_total');
   const allDemand = findResult(mktData, 'demand_energy',        'demand_energy_total');
 
-  // Split into this-week vs last-week
+  const start14 = new Date(start);
+  const start7 = new Date(start);
+  start7.setUTCDate(start7.getUTCDate() + 7);
   const thisWeek  = p => p.ts >= start7;
   const lastWeek  = p => p.ts >= start14 && p.ts < start7;
 
