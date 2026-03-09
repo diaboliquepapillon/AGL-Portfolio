@@ -31,7 +31,7 @@ def _get_api_key():
     return key
 
 OE_BASE  = 'https://api.openelectricity.org.au'
-PORT     = 8080
+PORT     = int(os.environ.get('PORT', '8080'))
 
 class PortfolioHandler(http.server.SimpleHTTPRequestHandler):
 

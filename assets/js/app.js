@@ -1492,8 +1492,10 @@ function multiVarRegression(priceArr, renewArr, demandArr) {
 
 /* ── Region comparison (last 12 months, monthly) ────────────────────────── */
 async function loadRegionData() {
-  const end   = new Date(); end.setDate(1); end.setHours(0,0,0,0);
-  const start = new Date(end); start.setFullYear(start.getFullYear() - 1);
+  // Use last complete month as end (API often 422 if end is current month)
+  const now = new Date();
+  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1 + 1, 0)); // last day of prev month UTC
+  const start = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth() - 11, 1));  // first day of month, 11 months before end (= 12 months of data)
   const toISO = d => d.toISOString().slice(0, 10) + 'T00:00:00';
 
   const data = await apiFetch(
@@ -1581,8 +1583,10 @@ function chartRegionRenew(labels, renews) {
 
 /* ── Load 7-day hourly data ─────────────────────────────────────────────── */
 async function loadLiveData() {
-  const now    = new Date();
-  const end    = new Date(now);
+  const now = new Date();
+  // End at least 6 hours ago so API has data (avoids 422 for "future" or incomplete period)
+  const endMs = now.getTime() - 6 * 60 * 60 * 1000;
+  const end = new Date(endMs);
   end.setMinutes(0, 0, 0);
   const start7 = new Date(end);
   start7.setDate(start7.getDate() - 7);
