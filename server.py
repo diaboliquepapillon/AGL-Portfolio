@@ -16,7 +16,20 @@ import urllib.error
 import os
 import json
 
-API_KEY  = 'oe_PRMyNcCKbmA1FM6U3uDYnZ'
+# Load from environment (e.g. .env or export OE_API_KEY). No default — keep secrets out of repo.
+def _get_api_key():
+    key = os.environ.get('OE_API_KEY', '').strip()
+    if not key and os.path.exists(os.path.join(os.path.dirname(__file__), '.env')):
+        try:
+            with open(os.path.join(os.path.dirname(__file__), '.env')) as f:
+                for line in f:
+                    if line.startswith('OE_API_KEY='):
+                        key = line.split('=', 1)[1].strip().strip('"\'')
+                        break
+        except Exception:
+            pass
+    return key
+
 OE_BASE  = 'https://api.openelectricity.org.au'
 PORT     = 8080
 
@@ -30,13 +43,20 @@ class PortfolioHandler(http.server.SimpleHTTPRequestHandler):
             super().do_GET()
 
     def _proxy(self):
+        api_key = _get_api_key()
+        if not api_key:
+            self.send_response(500)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps({'error': 'OE_API_KEY not set. Add to .env or export OE_API_KEY.'}).encode())
+            return
         # /api/v4/market/... → https://api.openelectricity.org.au/v4/market/...
         upstream = OE_BASE + self.path[4:]   # strip '/api' prefix
         try:
             req = urllib.request.Request(
                 upstream,
                 headers={
-                    'Authorization': f'Bearer {API_KEY}',
+                    'Authorization': f'Bearer {api_key}',
                     'Accept': 'application/json',
                     'User-Agent': 'AGL-Portfolio/1.0',
                 }

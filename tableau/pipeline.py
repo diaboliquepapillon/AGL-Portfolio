@@ -25,7 +25,7 @@ import csv, json, os, sys, time, datetime, argparse
 import urllib.request, urllib.error
 
 # ── Config ────────────────────────────────────────────────────────────────────
-API_KEY   = 'oe_PRMyNcCKbmA1FM6U3uDYnZ'
+API_KEY   = os.environ.get('OE_API_KEY', '').strip()  # Set in env or .env in repo root
 API_BASE  = 'https://api.openelectricity.org.au/v4'
 _HERE     = os.path.dirname(os.path.abspath(__file__))
 CSV_INPUT = os.path.join(_HERE, '..', '19981201 Open Electricity.csv')
