@@ -2,8 +2,7 @@
   publish = "."
   functions = "netlify/functions"
 
-# Send /api/* to the serverless proxy (so "This Week" live data works)
-# :splat = path after /api/ (e.g. v4/market/...) so the function can forward it
+# Send /api/* to the serverless proxy (so "This Week" and region data work)
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api?path=:splat"
