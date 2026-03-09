@@ -1527,7 +1527,8 @@ async function loadRegionData() {
         apiFetch(base + '&metrics=price'),
         apiFetch(base + '&metrics=renewable_proportion'),
       ]);
-      data = { data: [...(priceRes.data || []), ...(renewRes.data || [])] };
+      const merged = [].concat(priceRes.data || [], renewRes.data || []);
+      data = { data: merged };
     } else throw e;
   }
 
@@ -1628,7 +1629,8 @@ async function loadLiveData() {
         apiFetch(base + '&metrics=renewable_proportion'),
         apiFetch(base + '&metrics=demand_energy'),
       ]);
-      mktData = { data: [...(priceRes.data || []), ...(renewRes.data || []), ...(demandRes.data || [])] };
+      const merged = [].concat(priceRes.data || [], renewRes.data || [], demandRes.data || []);
+      mktData = { data: merged };
     } else throw e;
   }
 
