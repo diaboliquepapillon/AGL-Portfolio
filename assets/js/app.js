@@ -1513,15 +1513,17 @@ function multiVarRegression(priceArr, renewArr, demandArr) {
 
 /* ── Region comparison (last 12 months, monthly) ────────────────────────── */
 async function loadRegionData() {
-  // Fixed full year in the past to avoid 422 (API can be strict on "current" month)
+  // Fixed full year in the past to avoid 422. API validates metrics strictly: request one metric per call and merge.
   const start = new Date(Date.UTC(2024, 0, 1));   // 2024-01-01
   const end   = new Date(Date.UTC(2024, 11, 31)); // 2024-12-31
   const toISO = d => d.toISOString().slice(0, 10) + 'T00:00:00';
+  const base = `/market/network/NEM?interval=1M&primary_grouping=network_region&date_start=${toISO(start)}&date_end=${toISO(end)}`;
 
-  const data = await apiFetch(
-    `/market/network/NEM?metrics=price&metrics=renewable_proportion&interval=1M&primary_grouping=network_region` +
-    `&date_start=${toISO(start)}&date_end=${toISO(end)}`
-  );
+  const [priceRes, renewRes] = await Promise.all([
+    apiFetch(base + '&metrics=price'),
+    apiFetch(base + '&metrics=renewable_proportion'),
+  ]);
+  const data = { data: [...(priceRes.data || []), ...(renewRes.data || []) };
 
   // Extract per-region averages
   const REGIONS = ['NSW1','QLD1','SA1','TAS1','VIC1'];
@@ -1609,11 +1611,17 @@ async function loadLiveData() {
   const start = new Date(end);
   start.setUTCDate(start.getUTCDate() - 14);
   const toISO = d => d.toISOString().slice(0, 19);
+  const base = `/market/network/NEM?interval=1h&date_start=${toISO(start)}&date_end=${toISO(end)}`;
 
-  const mktData = await apiFetch(
-    `/market/network/NEM?metrics=price&metrics=renewable_proportion&metrics=demand_energy&interval=1h` +
-    `&date_start=${toISO(start)}&date_end=${toISO(end)}`
-  );
+  // API validates one metric per request: fetch each metric separately and merge
+  const [priceRes, renewRes, demandRes] = await Promise.all([
+    apiFetch(base + '&metrics=price'),
+    apiFetch(base + '&metrics=renewable_proportion'),
+    apiFetch(base + '&metrics=demand_energy'),
+  ]);
+  const mktData = {
+    data: [...(priceRes.data || []), ...(renewRes.data || []), ...(demandRes.data || [])],
+  };
 
   const allPrice  = findResult(mktData, 'price',                'price_total');
   const allRenew  = findResult(mktData, 'renewable_proportion', 'renewable_proportion_total');
