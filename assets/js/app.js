@@ -1401,8 +1401,29 @@ const API_BASE = '/api/v4';
 
 async function apiFetch(path) {
   const res = await fetch(`${API_BASE}${path}`);
-  if (!res.ok) throw new Error(`Proxy ${res.status}: ${path}`);
-  const json = await res.json();
+  const body = await res.text();
+  if (!res.ok) {
+    let detail = '';
+    try {
+      const j = JSON.parse(body);
+      if (j.detail && Array.isArray(j.detail) && j.detail[0] && j.detail[0].msg)
+        detail = j.detail.map(d => d.msg).join('; ');
+      else if (j.error && (typeof j.error === 'string' || j.error?.message))
+        detail = typeof j.error === 'string' ? j.error : j.error.message;
+    } catch (_) {
+      detail = body.slice(0, 200);
+    }
+    const msg = detail ? `Proxy ${res.status}: ${path}\nAPI said: ${detail}` : `Proxy ${res.status}: ${path}\n${body.slice(0, 300)}`;
+    const err = new Error(msg);
+    err.apiDetail = detail || body.slice(0, 300);
+    throw err;
+  }
+  let json;
+  try {
+    json = JSON.parse(body);
+  } catch (_) {
+    throw new Error(`Invalid JSON: ${path}`);
+  }
   if (!json.success) throw new Error(json.error || 'API error');
   return json;
 }
@@ -1495,7 +1516,7 @@ async function loadRegionData() {
   // Fixed full year in the past to avoid 422 (API can be strict on "current" month)
   const start = new Date(Date.UTC(2024, 0, 1));   // 2024-01-01
   const end   = new Date(Date.UTC(2024, 11, 31)); // 2024-12-31
-  const toISO = d => d.toISOString().slice(0, 10) + 'T00:00:00Z';
+  const toISO = d => d.toISOString().slice(0, 10) + 'T00:00:00';
 
   const data = await apiFetch(
     `/market/network/NEM?metrics=price&metrics=renewable_proportion&interval=1M&primary_grouping=network_region` +
@@ -1587,7 +1608,7 @@ async function loadLiveData() {
   end.setUTCHours(23, 0, 0, 0);
   const start = new Date(end);
   start.setUTCDate(start.getUTCDate() - 14);
-  const toISO = d => d.toISOString().slice(0, 19) + 'Z';
+  const toISO = d => d.toISOString().slice(0, 19);
 
   const mktData = await apiFetch(
     `/market/network/NEM?metrics=price&metrics=renewable_proportion&metrics=demand_energy&interval=1h` +
@@ -1860,9 +1881,11 @@ function chartLiveHourly(priceData) {
 /* ── Start live data loading (independent of CSV) ───────────────────────── */
 loadRegionData().catch(err => console.warn('Region data failed:', err));
 loadLiveData().catch(err => {
-  console.error('Live data load failed:', err);
+  const apiMsg = err.apiDetail || (err.message || '').split('\n')[1] || '';
   const insEl = document.getElementById('ins-live-status');
-  if (insEl) insEl.textContent = 'Live data unavailable: check API key or network connection.';
+  if (insEl) insEl.textContent = 'Live data not available on this host.';
   document.getElementById('live-kpis').innerHTML =
-    '<div class="insight-chip chip-red" style="grid-column:1/-1"><span class="chip-icon">⚠️</span><span>API connection failed. Historical data below still loads from CSV.</span></div>';
+    '<div class="section-takeaway" style="grid-column:1/-1; margin-top:0"><p><strong>Live data is not available on this host.</strong> The API proxy may be disabled or not deployed. All other sections use the CSV and work normally.</p>' +
+    (apiMsg ? `<p class="ci-measure" style="margin-top:10px;font-size:0.75rem"><strong>API said:</strong> ${apiMsg.replace(/</g, '&lt;').slice(0, 400)}</p>` : '') +
+    '</div>';
 });
