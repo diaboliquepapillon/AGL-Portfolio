@@ -1,0 +1,11 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# Send /api/* to the serverless proxy (so "This Week" live data works)
+# :splat = path after /api/ (e.g. v4/market/...) so the function can forward it
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api?path=:splat"
+  status = 200
+  force = true
