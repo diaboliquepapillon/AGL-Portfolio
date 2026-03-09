@@ -1518,12 +1518,18 @@ async function loadRegionData() {
   const end   = new Date(Date.UTC(2024, 11, 31)); // 2024-12-31
   const toISO = d => d.toISOString().slice(0, 10) + 'T00:00:00';
   const base = `/market/network/NEM?interval=1M&primary_grouping=network_region&date_start=${toISO(start)}&date_end=${toISO(end)}`;
-
-  const [priceRes, renewRes] = await Promise.all([
-    apiFetch(base + '&metrics=price'),
-    apiFetch(base + '&metrics=renewable_proportion'),
-  ]);
-  const data = { data: [...(priceRes.data || []), ...(renewRes.data || []) };
+  let data;
+  try {
+    data = await apiFetch(base + '&metrics=price,renewable_proportion');
+  } catch (e) {
+    if (e.apiDetail && e.apiDetail.includes('Input should be')) {
+      const [priceRes, renewRes] = await Promise.all([
+        apiFetch(base + '&metrics=price'),
+        apiFetch(base + '&metrics=renewable_proportion'),
+      ]);
+      data = { data: [...(priceRes.data || []), ...(renewRes.data || [])] };
+    } else throw e;
+  }
 
   // Extract per-region averages
   const REGIONS = ['NSW1','QLD1','SA1','TAS1','VIC1'];
@@ -1612,16 +1618,19 @@ async function loadLiveData() {
   start.setUTCDate(start.getUTCDate() - 14);
   const toISO = d => d.toISOString().slice(0, 19);
   const base = `/market/network/NEM?interval=1h&date_start=${toISO(start)}&date_end=${toISO(end)}`;
-
-  // API validates one metric per request: fetch each metric separately and merge
-  const [priceRes, renewRes, demandRes] = await Promise.all([
-    apiFetch(base + '&metrics=price'),
-    apiFetch(base + '&metrics=renewable_proportion'),
-    apiFetch(base + '&metrics=demand_energy'),
-  ]);
-  const mktData = {
-    data: [...(priceRes.data || []), ...(renewRes.data || []), ...(demandRes.data || [])],
-  };
+  let mktData;
+  try {
+    mktData = await apiFetch(base + '&metrics=price,renewable_proportion,demand_energy');
+  } catch (e) {
+    if (e.apiDetail && e.apiDetail.includes('Input should be')) {
+      const [priceRes, renewRes, demandRes] = await Promise.all([
+        apiFetch(base + '&metrics=price'),
+        apiFetch(base + '&metrics=renewable_proportion'),
+        apiFetch(base + '&metrics=demand_energy'),
+      ]);
+      mktData = { data: [...(priceRes.data || []), ...(renewRes.data || []), ...(demandRes.data || [])] };
+    } else throw e;
+  }
 
   const allPrice  = findResult(mktData, 'price',                'price_total');
   const allRenew  = findResult(mktData, 'renewable_proportion', 'renewable_proportion_total');
@@ -1887,7 +1896,6 @@ function chartLiveHourly(priceData) {
 }
 
 /* ── Start live data loading (independent of CSV) ───────────────────────── */
-loadRegionData().catch(err => console.warn('Region data failed:', err));
 loadLiveData().catch(err => {
   const apiMsg = err.apiDetail || (err.message || '').split('\n')[1] || '';
   const insEl = document.getElementById('ins-live-status');
@@ -1897,3 +1905,5 @@ loadLiveData().catch(err => {
     (apiMsg ? `<p class="ci-measure" style="margin-top:10px;font-size:0.75rem"><strong>API said:</strong> ${apiMsg.replace(/</g, '&lt;').slice(0, 400)}</p>` : '') +
     '</div>';
 });
+// Load region data after a short delay so "This Week" appears first
+setTimeout(() => loadRegionData().catch(err => console.warn('Region data failed:', err)), 300);
